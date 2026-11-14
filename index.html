@@ -69,7 +69,7 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .alert-block .gdoc,.alert-block .gdoc *{color:#fff!important}
 /* リンクボタンブロック */
 .link-btns{display:flex;gap:10px;flex-wrap:wrap}
-.link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}
+.link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;text-decoration:none}
 .link-btn:hover{opacity:.88}
 /* ===== 映画サイト向け ===== */
 /* ヒーロー（ポスター＋タイトル） */
@@ -228,14 +228,31 @@ function scopeCss(cssText, scope) {
 
 // ドキュメント内の画像は Google 側の埋め込み制限で直接表示できないため、
 // fetch で取得し直して blob URL に差し替える
-function fixDocImages(div) {
+async function fetchImageBlob(url, tries) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(url);
+      if (r.ok) { const b = await r.blob(); if (!b.type || b.type.indexOf('image/') === 0) return b; }
+    } catch (e) { /* 少し待って再試行する */ }
+    if (i < tries - 1) await new Promise(res => setTimeout(res, 600 * (i + 1)));
+  }
+  return null;
+}
+async function fixDocImages(div) {
+  const jobs = [];
   div.querySelectorAll('img').forEach(img => {
     const src = img.getAttribute('src') || '';
     if (!/^https:\/\/docs\.google\.com\//.test(src)) return;
-    fetch(src).then(r => { if (!r.ok) throw new Error('img'); return r.blob(); })
-      .then(b => { img.src = URL.createObjectURL(b); })
-      .catch(() => {});
+    jobs.push((async () => {
+      const b = await fetchImageBlob(src, 3);
+      if (b) { img.src = URL.createObjectURL(b); return; }
+      setTimeout(async () => {
+        const retry = await fetchImageBlob(src, 2);
+        if (retry) img.src = URL.createObjectURL(retry);
+      }, 2500);
+    })());
   });
+  await Promise.all(jobs);
 }
 
 async function renderDoc(block, section, index) {
