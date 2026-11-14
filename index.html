@@ -122,6 +122,10 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .evt-tail[hidden]{display:none}
 .evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
 
+.evt-archive-btn{margin-top:22px}
+.evt-archive{margin-top:4px}
+
+
 /* スケジュール：読みやすさ調整（特に時間と料金を大きく太く） */
 .evt-row{padding:15px 8px}
 .evt-date{font-size:15px;line-height:1.45}
@@ -544,14 +548,11 @@ async function renderSheetEvents(block, section) {
     [['日付', '開催日'], ['イベント名', 'タイトル', 'ライブ名']]).filter(r => r[0] || r[1]);
   if (!rows.length) throw new Error('データなし');
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
-    .filter(x => !x.d || x.d >= today) // 終わったライブは自動で消す
+  const all = rows.map(r => ({ r, d: parseDateCell(r[0]) }));
+  const items = all.filter(x => !x.d || x.d >= today) // 終わったライブは予定欄には出さない
     .sort((a, b) => (a.d ? a.d.getTime() : Infinity) - (b.d ? b.d.getTime() : Infinity));
-  if (!items.length) {
-    section.insertAdjacentHTML('beforeend',
-      '<div class="scr-none">現在予定されているライブはありません。決まり次第お知らせします。</div>');
-    return;
-  }
+  const past = all.filter(x => x.d && x.d < today)
+    .sort((a, b) => b.d.getTime() - a.d.getTime()); // 過去分は新しい順に並べる
   const W = ['日', '月', '火', '水', '木', '金', '土'];
   const rowHtml = ({ r, d }) => {
     const isToday = d && d.getTime() === today.getTime();
@@ -575,17 +576,42 @@ async function renderSheetEvents(block, section) {
     return html;
   };
   const INITIAL = 10; // 最初に表示する件数（残りは「もっと見る」で開く）
-  const head = items.slice(0, INITIAL), tail = items.slice(INITIAL);
-  let html = groupedHtml(head);
-  if (tail.length) {
-    html += '<div class="evt-tail" hidden>' + groupedHtml(tail) + '</div>' +
-      '<button type="button" class="evt-more-btn">もっと見る（残り' + tail.length + '件）</button>';
+  let html = '';
+  if (items.length) {
+    const head = items.slice(0, INITIAL), tail = items.slice(INITIAL);
+    html += groupedHtml(head);
+    if (tail.length) {
+      html += '<div class="evt-tail" hidden>' + groupedHtml(tail) + '</div>' +
+        '<button type="button" class="evt-more-btn">もっと見る（残り' + tail.length + '件）</button>';
+    }
+  } else {
+    html += '<div class="scr-none">現在予定されているライブはありません。決まり次第お知らせします。</div>';
+  }
+  if (past.length) {
+    const PAST_INITIAL = 20; // 過去分は最初に20件、残りは「もっと見る」で遡る
+    const pHead = past.slice(0, PAST_INITIAL), pTail = past.slice(PAST_INITIAL);
+    html += '<button type="button" class="evt-more-btn evt-archive-btn">過去のライブを見る（全' + past.length + '件）</button>' +
+      '<div class="evt-archive" hidden>' + groupedHtml(pHead);
+    if (pTail.length) {
+      html += '<div class="evt-tail" hidden>' + groupedHtml(pTail) + '</div>' +
+        '<button type="button" class="evt-more-btn">もっと見る（残り' + pTail.length + '件）</button>';
+    }
+    html += '</div>';
   }
   section.insertAdjacentHTML('beforeend', html);
-  const btn = section.querySelector('.evt-more-btn');
-  if (btn) btn.addEventListener('click', () => {
-    section.querySelector('.evt-tail').hidden = false;
-    btn.remove();
+  section.querySelectorAll('.evt-more-btn').forEach(btn => {
+    if (btn.classList.contains('evt-archive-btn')) {
+      btn.addEventListener('click', () => {
+        const box = btn.nextElementSibling;
+        box.hidden = !box.hidden;
+        btn.textContent = box.hidden ? '過去のライブを見る（全' + past.length + '件）' : '過去のライブを閉じる';
+      });
+    } else {
+      btn.addEventListener('click', () => {
+        btn.previousElementSibling.hidden = false;
+        btn.remove();
+      });
+    }
   });
 }
 
