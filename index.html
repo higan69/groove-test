@@ -121,6 +121,8 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .evt-month{font-weight:900;font-size:15px;margin:18px 8px 2px}
 .evt-tail[hidden]{display:none}
 .evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
+.evt-link-btn{display:inline-block;margin-top:9px;padding:8px 20px;border-radius:20px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}
+
 
 .evt-archive-btn{margin-top:22px}
 .evt-archive{margin-top:4px}
@@ -258,6 +260,7 @@ async function fixDocImages(div) {
       setTimeout(async () => {
         const retry = await fetchImageBlob(src, 2);
         if (retry) img.src = URL.createObjectURL(retry);
+        else img.style.display = 'none'; // 取得できない画像は壊れたアイコンを残さない
       }, 2500);
     })());
   });
@@ -554,7 +557,7 @@ async function renderSheetEvents(block, section) {
   const past = all.filter(x => x.d && x.d < today)
     .sort((a, b) => b.d.getTime() - a.d.getTime()); // 過去分は新しい順に並べる
   const W = ['日', '月', '火', '水', '木', '金', '土'];
-  const rowHtml = ({ r, d }) => {
+  const rowHtml = ({ r, d }, isPast) => {
     const isToday = d && d.getTime() === today.getTime();
     const dateText = d ? (d.getMonth() + 1) + '月' + d.getDate() + '日（' + W[d.getDay()] + '）' : r[0];
     return '<div class="evt-row' + (isToday ? ' today' : '') + '">' +
@@ -563,15 +566,16 @@ async function renderSheetEvents(block, section) {
       (r[2] ? '<div class="evt-acts">' + escapeHtml(r[2]) + '</div>' : '') +
       (r[3] ? '<div class="evt-time">' + escapeHtml(r[3]) + '</div>' : '') +
       (r[4] ? '<div class="evt-price">' + escapeHtml(r[4]) + '</div>' : '') +
-      (r[5] ? '<div class="evt-note">' + escapeHtml(r[5]) + '</div>' : '') + '</div></div>';
+      (r[5] ? '<div class="evt-note">' + escapeHtml(r[5]) + '</div>' : '') +
+      (r[6] && /^https?:\/\//.test(r[6].trim()) ? '<a class="evt-link-btn" href="' + escapeHtml(r[6].trim()) + '" target="_blank" rel="noopener">詳しく見る</a>' : '') + '</div></div>';
   };
   const monthLabel = d => d ? d.getFullYear() + '年' + (d.getMonth() + 1) + '月' : '日付未定';
-  const groupedHtml = list => {
+  const groupedHtml = (list, isPast) => {
     let html = '', last = null;
     list.forEach(x => {
       const label = monthLabel(x.d);
       if (label !== last) { html += '<div class="evt-month">' + label + '</div>'; last = label; }
-      html += rowHtml(x);
+      html += rowHtml(x, isPast);
     });
     return html;
   };
@@ -591,9 +595,9 @@ async function renderSheetEvents(block, section) {
     const PAST_INITIAL = 20; // 過去分は最初に20件、残りは「もっと見る」で遡る
     const pHead = past.slice(0, PAST_INITIAL), pTail = past.slice(PAST_INITIAL);
     html += '<button type="button" class="evt-more-btn evt-archive-btn">過去のライブを見る（全' + past.length + '件）</button>' +
-      '<div class="evt-archive" hidden>' + groupedHtml(pHead);
+      '<div class="evt-archive" hidden>' + groupedHtml(pHead, true);
     if (pTail.length) {
-      html += '<div class="evt-tail" hidden>' + groupedHtml(pTail) + '</div>' +
+      html += '<div class="evt-tail" hidden>' + groupedHtml(pTail, true) + '</div>' +
         '<button type="button" class="evt-more-btn">もっと見る（残り' + pTail.length + '件）</button>';
     }
     html += '</div>';
