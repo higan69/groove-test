@@ -200,6 +200,18 @@ function scopeCss(cssText, scope) {
   return imports.join('\n') + '\n' + rules;
 }
 
+// ドキュメント内の画像は Google 側の埋め込み制限で直接表示できないため、
+// fetch で取得し直して blob URL に差し替える
+function fixDocImages(div) {
+  div.querySelectorAll('img').forEach(img => {
+    const src = img.getAttribute('src') || '';
+    if (!/^https:\/\/docs\.google\.com\//.test(src)) return;
+    fetch(src).then(r => { if (!r.ok) throw new Error('img'); return r.blob(); })
+      .then(b => { img.src = URL.createObjectURL(b); })
+      .catch(() => {});
+  });
+}
+
 async function renderDoc(block, section, index) {
   if (!block.url) throw new Error('URL未設定');
   let url = block.url;
@@ -220,6 +232,7 @@ async function renderDoc(block, section, index) {
   div.className = 'gdoc ' + scopeClass;
   div.innerHTML = contents.innerHTML;
   div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+  fixDocImages(div);
   section.appendChild(div);
 }
 
@@ -474,6 +487,7 @@ async function renderAlert(block, section, index) {
   div.className = 'gdoc ' + scopeClass;
   div.innerHTML = contents.innerHTML;
   div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+  fixDocImages(div);
   section.appendChild(div);
 }
 
