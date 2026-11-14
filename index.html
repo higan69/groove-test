@@ -207,7 +207,7 @@ async function renderDoc(block, section, index) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Doc取得エラー');
   const parsed = new DOMParser().parseFromString(await res.text(), 'text/html');
-  const contents = parsed.querySelector('#contents');
+  const contents = parsed.querySelector('#contents') || parsed.querySelector('.doc-content');
   if (!contents) throw new Error('Doc解析エラー');
   if (!contents.textContent.trim()) throw new Error('内容なし'); // 空の文書は欄ごと出さない
   const scopeClass = 'gdoc-' + index;
@@ -461,7 +461,7 @@ async function renderAlert(block, section, index) {
   const res = await fetch(url);
   if (!res.ok) throw new Error('Doc取得エラー');
   const parsed = new DOMParser().parseFromString(await res.text(), 'text/html');
-  const contents = parsed.querySelector('#contents');
+  const contents = parsed.querySelector('#contents') || parsed.querySelector('.doc-content');
   if (!contents) throw new Error('Doc解析エラー');
   if (!contents.textContent.trim()) throw new Error('内容なし');
   const scopeClass = 'gdoc-alert-' + index;
