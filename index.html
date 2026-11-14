@@ -1,18 +1,12 @@
-<!-- ============================================================
-  groove BASE組み込み用（CSSスコープ版）
-  使い方：BASEの「HTML編集」で、表示したい場所にこのファイルの中身を
-  まるごと貼り付ける。スタイルは #sheetdoc-groove の内側だけに効くので、
-  BASEテーマ側のCSSとは互いに干渉しない。
-  CONFIG には「ウェブに公開」済みのドキュメント／スプレッドシートの
-  URL を設定済み（本番用）。内容の更新は Google ドキュメント／
-  スプレッドシート側を編集する。
-  ============================================================ -->
-<div id="sheetdoc-groove">
-<div id="headIMG"><img src="https://basefile.akamaized.net/grooveline/63a84fb276090/noisebord1.jpg" alt="Live House groove"></div>
-  <div id="sdg-blocks"></div>
-</div>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>groove｜沖縄・浦添市勢理客のライブハウス</title>
 <style>
-/* ===== テーマ（ここの変数を変えると見た目が変わります） ===== */#sheetdoc-groove{
+/* ===== テーマ（ここの変数を変えると見た目が変わります） ===== */
+:root{
   --accent:#ffb340;        /* アクセントカラー */
   --ink:#ece9e2;           /* 文字色 */
   --muted:#9aa3ab;         /* 補足テキスト色 */
@@ -20,52 +14,152 @@
   --paper:#131518;         /* 背景色 */
   --card:#1d2025;          /* カード背景 */
   --radius:12px;
-}#sheetdoc-groove *{box-sizing:border-box}#sheetdoc-groove{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.6}#sheetdoc-groove header{background:#fff;border-bottom:4px solid var(--accent);padding:26px max(18px,calc((100% - 960px)/2))}#sheetdoc-groove header .site-title{font-size:clamp(24px,5vw,36px);font-weight:900;margin:0}#sheetdoc-groove header .site-sub{color:var(--muted);font-size:13px;margin-top:4px}#sheetdoc-groove #sdg-blocks{max-width:960px;margin:22px auto;padding:0 14px 40px;display:grid;gap:16px}#sheetdoc-groove .block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}#sheetdoc-groove .block>h2{font-size:18px;margin:0 0 10px;color:var(--accent)}#sheetdoc-groove .block .loading{color:var(--muted);font-size:13px}
-/* ドキュメント取り込み部（Google側のスタイルはJSでこの中だけに閉じ込めます） */#sheetdoc-groove .gdoc{overflow-x:auto}#sheetdoc-groove .gdoc .doc-content{padding:0!important;max-width:none!important}/* ドキュメント本文は Doc 側の色に関わらず読みやすい色に固定する */
-#sheetdoc-groove .gdoc, #sheetdoc-groove .gdoc p, #sheetdoc-groove .gdoc span, #sheetdoc-groove .gdoc li, #sheetdoc-groove .gdoc td, #sheetdoc-groove .gdoc th,
-#sheetdoc-groove .gdoc h1, #sheetdoc-groove .gdoc h2, #sheetdoc-groove .gdoc h3, #sheetdoc-groove .gdoc h4, #sheetdoc-groove .gdoc h5, #sheetdoc-groove .gdoc h6 { color: #ece9e2 !important; }
-#sheetdoc-groove .gdoc a { color: #ffb59d !important; text-decoration: underline; }
-#sheetdoc-groove .gdoc img{max-width:100%;height:auto}
-/* 表ブロック（列が多い表はカード内で横スクロール） */#sheetdoc-groove .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}#sheetdoc-groove table.sheet{border-collapse:collapse;width:100%;font-size:14px}#sheetdoc-groove table.sheet th, #sheetdoc-groove table.sheet td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}#sheetdoc-groove table.sheet th{background:#f0f8fa;font-weight:800}
-/* リストブロック */#sheetdoc-groove .list-item{padding:10px 2px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .list-item:last-child{border-bottom:0}#sheetdoc-groove .list-item .li-title{font-weight:800}#sheetdoc-groove .list-item .li-body{font-size:13px;color:#59646b;margin-top:2px;white-space:pre-wrap}
-/* メニューブロック（点線リーダー＋価格右寄せ） */#sheetdoc-groove .menu-item{display:flex;align-items:baseline;gap:8px;padding:7px 2px}#sheetdoc-groove .menu-item .m-name{font-weight:700}#sheetdoc-groove .menu-item .m-dots{flex:1;border-bottom:2px dotted #c3ccd1;transform:translateY(-3px)}#sheetdoc-groove .menu-item .m-price{font-weight:800;color:var(--accent);white-space:nowrap}#sheetdoc-groove .menu-desc{font-size:12px;color:#59646b;padding:0 2px 7px}
-/* 営業時間ブロック */#sheetdoc-groove .hours-row{display:flex;flex-wrap:wrap;gap:4px 12px;padding:7px 8px;border-bottom:1px solid #e8ecee;font-size:14px}#sheetdoc-groove .hours-row:last-child{border-bottom:0}#sheetdoc-groove .hours-row .h-day{font-weight:800;min-width:3.2em}#sheetdoc-groove .hours-row .h-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}#sheetdoc-groove .hours-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .h-badge{background:#e99b35;color:#fff;font-size:10px;font-weight:800;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:2px}
-/* ギャラリーブロック */#sheetdoc-groove .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}#sheetdoc-groove .gallery figure{margin:0}#sheetdoc-groove .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}#sheetdoc-groove .gallery figcaption{font-size:12px;color:#59646b;margin-top:4px;text-align:center}
-/* 地図ブロック */#sheetdoc-groove .map-frame{width:100%;height:320px;border:0;border-radius:8px}#sheetdoc-groove .map-address{font-size:14px;margin-top:8px}#sheetdoc-groove .map-note{font-size:12px;color:var(--muted)}
-/* 緊急バナー（ドキュメント連動。空なら出ない） */#sheetdoc-groove .alert-block{background:#b91c1c;color:#fff;border-radius:var(--radius);padding:16px 20px;font-weight:700}#sheetdoc-groove .alert-block .gdoc, #sheetdoc-groove .alert-block .gdoc *{color:#fff!important}
-/* リンクボタンブロック */#sheetdoc-groove .link-btns{display:flex;gap:10px;flex-wrap:wrap}#sheetdoc-groove .link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}#sheetdoc-groove .link-btn:hover{opacity:.88}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.6}
+header{background:#fff;border-bottom:4px solid var(--accent);padding:26px max(18px,calc((100% - 960px)/2))}
+header .site-title{font-size:clamp(24px,5vw,36px);font-weight:900;margin:0}
+header .site-sub{color:var(--muted);font-size:13px;margin-top:4px}
+main{max-width:960px;margin:22px auto;padding:0 14px 40px;display:grid;gap:16px}
+.block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.block>h2{font-size:18px;margin:0 0 10px;color:var(--accent)}
+.block .loading{color:var(--muted);font-size:13px}
+/* ドキュメント取り込み部（Google側のスタイルはJSでこの中だけに閉じ込めます） */
+.gdoc{overflow-x:auto}
+.gdoc .doc-content{padding:0!important;max-width:none!important}
+/* ドキュメント本文は Doc 側の色に関わらず読みやすい色に固定する */
+.gdoc, .gdoc p, .gdoc span, .gdoc li, .gdoc td, .gdoc th,
+.gdoc h1, .gdoc h2, .gdoc h3, .gdoc h4, .gdoc h5, .gdoc h6 { color: #ece9e2 !important; }
+.gdoc a { color: #ffb59d !important; text-decoration: underline; }
+.gdoc img{max-width:100%;height:auto}
+/* 表ブロック（列が多い表はカード内で横スクロール） */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.sheet{border-collapse:collapse;width:100%;font-size:14px}
+table.sheet th,table.sheet td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+table.sheet th{background:#f0f8fa;font-weight:800}
+/* リストブロック */
+.list-item{padding:10px 2px;border-bottom:1px solid #e8ecee}
+.list-item:last-child{border-bottom:0}
+.list-item .li-title{font-weight:800}
+.list-item .li-body{font-size:13px;color:#59646b;margin-top:2px;white-space:pre-wrap}
+/* メニューブロック（点線リーダー＋価格右寄せ） */
+.menu-item{display:flex;align-items:baseline;gap:8px;padding:7px 2px}
+.menu-item .m-name{font-weight:700}
+.menu-item .m-dots{flex:1;border-bottom:2px dotted #c3ccd1;transform:translateY(-3px)}
+.menu-item .m-price{font-weight:800;color:var(--accent);white-space:nowrap}
+.menu-desc{font-size:12px;color:#59646b;padding:0 2px 7px}
+/* 営業時間ブロック */
+.hours-row{display:flex;flex-wrap:wrap;gap:4px 12px;padding:7px 8px;border-bottom:1px solid #e8ecee;font-size:14px}
+.hours-row:last-child{border-bottom:0}
+.hours-row .h-day{font-weight:800;min-width:3.2em}
+.hours-row .h-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}
+.hours-row.today{background:#fdf6e3;border-radius:6px}
+.h-badge{background:#e99b35;color:#fff;font-size:10px;font-weight:800;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+/* ギャラリーブロック */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gallery figure{margin:0}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}
+.gallery figcaption{font-size:12px;color:#59646b;margin-top:4px;text-align:center}
+/* 地図ブロック */
+.map-frame{width:100%;height:320px;border:0;border-radius:8px}
+.map-address{font-size:14px;margin-top:8px}
+.map-note{font-size:12px;color:var(--muted)}
+/* 緊急バナー（ドキュメント連動。空なら出ない） */
+.alert-block{background:#b91c1c;color:#fff;border-radius:var(--radius);padding:16px 20px;font-weight:700}
+.alert-block .gdoc,.alert-block .gdoc *{color:#fff!important}
+/* リンクボタンブロック */
+.link-btns{display:flex;gap:10px;flex-wrap:wrap}
+.link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}
+.link-btn:hover{opacity:.88}
 /* ===== 映画サイト向け ===== */
-/* ヒーロー（ポスター＋タイトル） */#sheetdoc-groove .hero-block{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}#sheetdoc-groove .hero-img{width:min(300px,80%);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.25)}#sheetdoc-groove .hero-catch{color:var(--accent);font-weight:800}#sheetdoc-groove .hero-title{font-size:clamp(28px,6vw,44px);font-weight:900;line-height:1.25}#sheetdoc-groove .hero-date{font-weight:800;margin-top:6px}#sheetdoc-groove .hero-badge{display:inline-block;background:#e99b35;color:#fff;font-weight:800;border-radius:14px;padding:3px 14px;margin-top:10px;font-size:13px}
-@media(min-width:700px){#sheetdoc-groove .hero-block{flex-direction:row;text-align:left}#sheetdoc-groove .hero-img{width:260px;flex-shrink:0}}
-/* 予告編（クリックで読み込む） */#sheetdoc-groove .yt-facade{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;cursor:pointer}#sheetdoc-groove .yt-facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}#sheetdoc-groove .yt-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}#sheetdoc-groove .yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:#ff0000;border-radius:12px}#sheetdoc-groove .yt-play:after{content:'';position:absolute;top:50%;left:50%;transform:translate(-40%,-50%);border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
-/* 上映情報 */#sheetdoc-groove .scr-row{display:flex;flex-wrap:wrap;gap:4px 14px;padding:9px 8px;border-bottom:1px solid #e8ecee;font-size:14px;align-items:baseline}#sheetdoc-groove .scr-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .scr-date{font-weight:800;color:var(--accent);min-width:8.5em}#sheetdoc-groove .scr-venue{font-weight:700}#sheetdoc-groove .scr-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}#sheetdoc-groove .scr-none{color:var(--muted);font-size:14px;padding:6px 2px}
-/* キャスト＆スタッフ */#sheetdoc-groove .credit-item{padding:10px 2px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .credit-item:last-child{border-bottom:0}#sheetdoc-groove .cr-name{font-size:17px;font-weight:900}#sheetdoc-groove .cr-role{color:var(--accent);font-weight:700;font-size:13px;margin-left:10px}#sheetdoc-groove .cr-profile{font-size:13px;color:#59646b;margin-top:3px;white-space:pre-wrap}
-/* 推薦コメント */#sheetdoc-groove .quote-item{margin:0 0 14px;padding:14px 16px;background:#f0f8fa;border-left:4px solid var(--accent);border-radius:0 8px 8px 0}#sheetdoc-groove .quote-item:last-child{margin-bottom:0}#sheetdoc-groove .quote-item p{margin:0;font-size:15px;font-weight:700}#sheetdoc-groove .quote-item cite{display:block;margin-top:6px;font-style:normal;font-size:12px;color:var(--muted);text-align:right}
-/* ライブハウスのイベント日程 */#sheetdoc-groove .evt-row{display:flex;gap:14px;padding:12px 8px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .evt-row:last-child{border-bottom:0}#sheetdoc-groove .evt-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .evt-date{font-weight:900;color:var(--accent);min-width:7.5em;font-size:14px}#sheetdoc-groove .evt-title{font-weight:900;font-size:16px}#sheetdoc-groove .evt-acts{font-size:14px;margin-top:2px}#sheetdoc-groove .evt-meta{font-size:12px;color:var(--muted);margin-top:3px}#sheetdoc-groove .evt-note{font-size:12px;color:#59646b;margin-top:2px}#sheetdoc-groove .evt-month{font-weight:900;font-size:15px;margin:18px 8px 2px}#sheetdoc-groove .evt-tail[hidden]{display:none}#sheetdoc-groove .evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
+/* ヒーロー（ポスター＋タイトル） */
+.hero-block{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.hero-img{width:min(300px,80%);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.hero-catch{color:var(--accent);font-weight:800}
+.hero-title{font-size:clamp(28px,6vw,44px);font-weight:900;line-height:1.25}
+.hero-date{font-weight:800;margin-top:6px}
+.hero-badge{display:inline-block;background:#e99b35;color:#fff;font-weight:800;border-radius:14px;padding:3px 14px;margin-top:10px;font-size:13px}
+@media(min-width:700px){.hero-block{flex-direction:row;text-align:left}.hero-img{width:260px;flex-shrink:0}}
+/* 予告編（クリックで読み込む） */
+.yt-facade{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;cursor:pointer}
+.yt-facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.yt-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:#ff0000;border-radius:12px}
+.yt-play:after{content:'';position:absolute;top:50%;left:50%;transform:translate(-40%,-50%);border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
+/* 上映情報 */
+.scr-row{display:flex;flex-wrap:wrap;gap:4px 14px;padding:9px 8px;border-bottom:1px solid #e8ecee;font-size:14px;align-items:baseline}
+.scr-row.today{background:#fdf6e3;border-radius:6px}
+.scr-date{font-weight:800;color:var(--accent);min-width:8.5em}
+.scr-venue{font-weight:700}
+.scr-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}
+.scr-none{color:var(--muted);font-size:14px;padding:6px 2px}
+/* キャスト＆スタッフ */
+.credit-item{padding:10px 2px;border-bottom:1px solid #e8ecee}
+.credit-item:last-child{border-bottom:0}
+.cr-name{font-size:17px;font-weight:900}
+.cr-role{color:var(--accent);font-weight:700;font-size:13px;margin-left:10px}
+.cr-profile{font-size:13px;color:#59646b;margin-top:3px;white-space:pre-wrap}
+/* 推薦コメント */
+.quote-item{margin:0 0 14px;padding:14px 16px;background:#f0f8fa;border-left:4px solid var(--accent);border-radius:0 8px 8px 0}
+.quote-item:last-child{margin-bottom:0}
+.quote-item p{margin:0;font-size:15px;font-weight:700}
+.quote-item cite{display:block;margin-top:6px;font-style:normal;font-size:12px;color:var(--muted);text-align:right}
+/* ライブハウスのイベント日程 */
+.evt-row{display:flex;gap:14px;padding:12px 8px;border-bottom:1px solid #e8ecee}
+.evt-row:last-child{border-bottom:0}
+.evt-row.today{background:#fdf6e3;border-radius:6px}
+.evt-date{font-weight:900;color:var(--accent);min-width:7.5em;font-size:14px}
+.evt-title{font-weight:900;font-size:16px}
+.evt-acts{font-size:14px;margin-top:2px}
+.evt-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.evt-note{font-size:12px;color:#59646b;margin-top:2px}
+.evt-month{font-weight:900;font-size:15px;margin:18px 8px 2px}
+.evt-tail[hidden]{display:none}
+.evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
 
 /* スケジュール：読みやすさ調整（特に時間と料金を大きく太く） */
-#sheetdoc-groove .evt-row{padding:15px 8px}
-#sheetdoc-groove .evt-date{font-size:15px;line-height:1.45}
-#sheetdoc-groove .evt-title{font-size:17px;line-height:1.45}
-#sheetdoc-groove .evt-acts{font-size:15px;line-height:1.55;margin-top:3px}
-#sheetdoc-groove .evt-time{font-size:15px;font-weight:800;color:var(--ink);margin-top:6px}
-#sheetdoc-groove .evt-price{font-size:16px;font-weight:900;color:var(--accent);margin-top:2px}
-#sheetdoc-groove .evt-note{font-size:13px;line-height:1.55;margin-top:4px}
-#sheetdoc-groove .evt-month{font-size:16px}
-#sheetdoc-groove .evt-note{color:#a8b2ba}
-@media (max-width:560px){#sheetdoc-groove .evt-row{flex-direction:column;gap:3px}#sheetdoc-groove .evt-date{min-width:0}}
+.evt-row{padding:15px 8px}
+.evt-date{font-size:15px;line-height:1.45}
+.evt-title{font-size:17px;line-height:1.45}
+.evt-acts{font-size:15px;line-height:1.55;margin-top:3px}
+.evt-time{font-size:15px;font-weight:800;color:var(--ink);margin-top:6px}
+.evt-price{font-size:16px;font-weight:900;color:var(--accent);margin-top:2px}
+.evt-note{font-size:13px;line-height:1.55;margin-top:4px}
+.evt-month{font-size:16px}
+.evt-note{color:#a8b2ba}
+@media (max-width:560px){.evt-row{flex-direction:column;gap:3px}.evt-date{min-width:0}}
 
 /* スケジュール：赤文字を黒背景で読みやすい金色に */
-#sheetdoc-groove .evt-date{color:#ffb340}
-#sheetdoc-groove .evt-price{color:#ffb340}
-#sheetdoc-groove .evt-more-btn{border-color:#ffb340;color:#ffb340}
-#sheetdoc-groove .h-badge{background:#ffb340;color:#241a05}
+.evt-date{color:#ffb340}
+.evt-price{color:#ffb340}
+.evt-more-btn{border-color:#ffb340;color:#ffb340}
+.h-badge{background:#ffb340;color:#241a05}
 
-/* ニュース */#sheetdoc-groove .news-item{display:flex;gap:12px;padding:8px 2px;border-bottom:1px solid #e8ecee;font-size:14px}#sheetdoc-groove .news-item:last-child{border-bottom:0}#sheetdoc-groove .news-date{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}#sheetdoc-groove .news-item a{color:var(--ink);font-weight:700}
-/* ライブハウス向けサンプル：ダークテーマ調整 */#sheetdoc-groove header{background:#191c20}#sheetdoc-groove .evt-row{border-bottom-color:#33383f}#sheetdoc-groove .evt-row.today{background:#3a3010}#sheetdoc-groove table.sheet th{background:#2a2e35}#sheetdoc-groove footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
+/* ニュース */
+.news-item{display:flex;gap:12px;padding:8px 2px;border-bottom:1px solid #e8ecee;font-size:14px}
+.news-item:last-child{border-bottom:0}
+.news-date{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.news-item a{color:var(--ink);font-weight:700}
+/* ライブハウス向けサンプル：ダークテーマ調整 */
+header{background:#191c20}
+.evt-row{border-bottom-color:#33383f}
+.evt-row.today{background:#3a3010}
+table.sheet th{background:#2a2e35}
+footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
 
-/*ヘッダイメージ*/#sheetdoc-groove #headIMG img{ width:100%; }
+/*ヘッダイメージ*/
+#headIMG img{ width:100%; }
 </style>
+</head>
+<body>
+<header>
+  <h1 class="site-title" id="siteTitle"></h1>
+  <div class="site-sub" id="siteSub"></div>
+</header>
+  <div id="headIMG"><img src="https://basefile.akamaized.net/grooveline/63a84fb276090/noisebord1.jpg" alt="Live House groove"></div>
+<main id="blocks"></main>
+<footer>groove（浦添市勢理客）— スケジュール・お知らせは Google スプレッドシート／ドキュメントと連動しています。</footer>
+
 <script>
 /* ================================================================
    設定はここだけ。Google側で「ウェブに公開」したURLを貼ってください。
@@ -88,8 +182,8 @@ const CONFIG = {
 
 /* ================= 以下、処理部分（通常は編集不要） ================= */
 
-/* BASE組み込み版：ページ側の見出しを使うため、タイトル書き込みは行わない */
-
+document.getElementById('siteTitle').textContent = CONFIG.siteTitle;
+document.getElementById('siteSub').textContent = CONFIG.siteSub;
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -484,7 +578,7 @@ const RENDERERS = {
 };
 
 async function loadBlocks() {
-  const main = document.getElementById('sdg-blocks');
+  const main = document.getElementById('blocks');
   for (let i = 0; i < CONFIG.blocks.length; i++) {
     const block = CONFIG.blocks[i];
     if (!RENDERERS[block.type]) continue;
@@ -510,3 +604,5 @@ async function loadBlocks() {
 
 loadBlocks();
 </script>
+</body>
+</html>
