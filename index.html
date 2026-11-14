@@ -13,7 +13,7 @@
 </div>
 <style>
 /* ===== テーマ（ここの変数を変えると見た目が変わります） ===== */#sheetdoc-groove{
-  --accent:#e4572e;        /* アクセントカラー */
+  --accent:#ffb340;        /* アクセントカラー */
   --ink:#ece9e2;           /* 文字色 */
   --muted:#9aa3ab;         /* 補足テキスト色 */
   --line:#343a41;          /* 罫線色 */
@@ -33,7 +33,7 @@
 /* ギャラリーブロック */#sheetdoc-groove .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}#sheetdoc-groove .gallery figure{margin:0}#sheetdoc-groove .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}#sheetdoc-groove .gallery figcaption{font-size:12px;color:#59646b;margin-top:4px;text-align:center}
 /* 地図ブロック */#sheetdoc-groove .map-frame{width:100%;height:320px;border:0;border-radius:8px}#sheetdoc-groove .map-address{font-size:14px;margin-top:8px}#sheetdoc-groove .map-note{font-size:12px;color:var(--muted)}
 /* 緊急バナー（ドキュメント連動。空なら出ない） */#sheetdoc-groove .alert-block{background:#b91c1c;color:#fff;border-radius:var(--radius);padding:16px 20px;font-weight:700}#sheetdoc-groove .alert-block .gdoc, #sheetdoc-groove .alert-block .gdoc *{color:#fff!important}
-/* リンクボタンブロック */#sheetdoc-groove .link-btns{display:flex;gap:10px;flex-wrap:wrap}#sheetdoc-groove .link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;text-decoration:none}#sheetdoc-groove .link-btn:hover{opacity:.88}
+/* リンクボタンブロック */#sheetdoc-groove .link-btns{display:flex;gap:10px;flex-wrap:wrap}#sheetdoc-groove .link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}#sheetdoc-groove .link-btn:hover{opacity:.88}
 /* ===== 映画サイト向け ===== */
 /* ヒーロー（ポスター＋タイトル） */#sheetdoc-groove .hero-block{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}#sheetdoc-groove .hero-img{width:min(300px,80%);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.25)}#sheetdoc-groove .hero-catch{color:var(--accent);font-weight:800}#sheetdoc-groove .hero-title{font-size:clamp(28px,6vw,44px);font-weight:900;line-height:1.25}#sheetdoc-groove .hero-date{font-weight:800;margin-top:6px}#sheetdoc-groove .hero-badge{display:inline-block;background:#e99b35;color:#fff;font-weight:800;border-radius:14px;padding:3px 14px;margin-top:10px;font-size:13px}
 @media(min-width:700px){#sheetdoc-groove .hero-block{flex-direction:row;text-align:left}#sheetdoc-groove .hero-img{width:260px;flex-shrink:0}}
@@ -54,6 +54,12 @@
 #sheetdoc-groove .evt-month{font-size:16px}
 #sheetdoc-groove .evt-note{color:#a8b2ba}
 @media (max-width:560px){#sheetdoc-groove .evt-row{flex-direction:column;gap:3px}#sheetdoc-groove .evt-date{min-width:0}}
+
+/* スケジュール：赤文字を黒背景で読みやすい金色に */
+#sheetdoc-groove .evt-date{color:#ffb340}
+#sheetdoc-groove .evt-price{color:#ffb340}
+#sheetdoc-groove .evt-more-btn{border-color:#ffb340;color:#ffb340}
+#sheetdoc-groove .h-badge{background:#ffb340;color:#241a05}
 
 /* ニュース */#sheetdoc-groove .news-item{display:flex;gap:12px;padding:8px 2px;border-bottom:1px solid #e8ecee;font-size:14px}#sheetdoc-groove .news-item:last-child{border-bottom:0}#sheetdoc-groove .news-date{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}#sheetdoc-groove .news-item a{color:var(--ink);font-weight:700}
 /* ライブハウス向けサンプル：ダークテーマ調整 */#sheetdoc-groove header{background:#191c20}#sheetdoc-groove .evt-row{border-bottom-color:#33383f}#sheetdoc-groove .evt-row.today{background:#3a3010}#sheetdoc-groove table.sheet th{background:#2a2e35}#sheetdoc-groove footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
