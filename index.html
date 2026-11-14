@@ -1,0 +1,566 @@
+<!-- ============================================================
+  groove BASE組み込み用（CSSスコープ版）
+  使い方：BASEの「HTML編集」で、表示したい場所にこのファイルの中身を
+  まるごと貼り付ける。スタイルは #sheetdoc-groove の内側だけに効くので、
+  BASEテーマ側のCSSとは互いに干渉しない。
+  実運用では下のスクリプト内 CONFIG の demo: URL を、
+  「ウェブに公開」したドキュメント／スプレッドシートのURLに差し替える。
+  ============================================================ -->
+<div id="sheetdoc-groove">
+<div id="headIMG"><img src="https://basefile.akamaized.net/grooveline/63a84fb276090/noisebord1.jpg" alt="Live House groove"></div>
+  <div id="sdg-blocks"></div>
+</div>
+<style>
+/* ===== テーマ（ここの変数を変えると見た目が変わります） ===== */#sheetdoc-groove{
+  --accent:#e4572e;        /* アクセントカラー */
+  --ink:#ece9e2;           /* 文字色 */
+  --muted:#9aa3ab;         /* 補足テキスト色 */
+  --line:#343a41;          /* 罫線色 */
+  --paper:#131518;         /* 背景色 */
+  --card:#1d2025;          /* カード背景 */
+  --radius:12px;
+}#sheetdoc-groove *{box-sizing:border-box}#sheetdoc-groove{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.6}#sheetdoc-groove header{background:#fff;border-bottom:4px solid var(--accent);padding:26px max(18px,calc((100% - 960px)/2))}#sheetdoc-groove header .site-title{font-size:clamp(24px,5vw,36px);font-weight:900;margin:0}#sheetdoc-groove header .site-sub{color:var(--muted);font-size:13px;margin-top:4px}#sheetdoc-groove #sdg-blocks{max-width:960px;margin:22px auto;padding:0 14px 40px;display:grid;gap:16px}#sheetdoc-groove .block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}#sheetdoc-groove .block>h2{font-size:18px;margin:0 0 10px;color:var(--accent)}#sheetdoc-groove .block .loading{color:var(--muted);font-size:13px}
+/* ドキュメント取り込み部（Google側のスタイルはJSでこの中だけに閉じ込めます） */#sheetdoc-groove .gdoc{overflow-x:auto}#sheetdoc-groove .gdoc .doc-content{padding:0!important;max-width:none!important}#sheetdoc-groove .gdoc img{max-width:100%;height:auto}
+/* 表ブロック（列が多い表はカード内で横スクロール） */#sheetdoc-groove .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}#sheetdoc-groove table.sheet{border-collapse:collapse;width:100%;font-size:14px}#sheetdoc-groove table.sheet th, #sheetdoc-groove table.sheet td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}#sheetdoc-groove table.sheet th{background:#f0f8fa;font-weight:800}
+/* リストブロック */#sheetdoc-groove .list-item{padding:10px 2px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .list-item:last-child{border-bottom:0}#sheetdoc-groove .list-item .li-title{font-weight:800}#sheetdoc-groove .list-item .li-body{font-size:13px;color:#59646b;margin-top:2px;white-space:pre-wrap}
+/* メニューブロック（点線リーダー＋価格右寄せ） */#sheetdoc-groove .menu-item{display:flex;align-items:baseline;gap:8px;padding:7px 2px}#sheetdoc-groove .menu-item .m-name{font-weight:700}#sheetdoc-groove .menu-item .m-dots{flex:1;border-bottom:2px dotted #c3ccd1;transform:translateY(-3px)}#sheetdoc-groove .menu-item .m-price{font-weight:800;color:var(--accent);white-space:nowrap}#sheetdoc-groove .menu-desc{font-size:12px;color:#59646b;padding:0 2px 7px}
+/* 営業時間ブロック */#sheetdoc-groove .hours-row{display:flex;flex-wrap:wrap;gap:4px 12px;padding:7px 8px;border-bottom:1px solid #e8ecee;font-size:14px}#sheetdoc-groove .hours-row:last-child{border-bottom:0}#sheetdoc-groove .hours-row .h-day{font-weight:800;min-width:3.2em}#sheetdoc-groove .hours-row .h-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}#sheetdoc-groove .hours-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .h-badge{background:#e99b35;color:#fff;font-size:10px;font-weight:800;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+/* ギャラリーブロック */#sheetdoc-groove .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}#sheetdoc-groove .gallery figure{margin:0}#sheetdoc-groove .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}#sheetdoc-groove .gallery figcaption{font-size:12px;color:#59646b;margin-top:4px;text-align:center}
+/* 地図ブロック */#sheetdoc-groove .map-frame{width:100%;height:320px;border:0;border-radius:8px}#sheetdoc-groove .map-address{font-size:14px;margin-top:8px}#sheetdoc-groove .map-note{font-size:12px;color:var(--muted)}
+/* 緊急バナー（ドキュメント連動。空なら出ない） */#sheetdoc-groove .alert-block{background:#b91c1c;color:#fff;border-radius:var(--radius);padding:16px 20px;font-weight:700}#sheetdoc-groove .alert-block .gdoc, #sheetdoc-groove .alert-block .gdoc *{color:#fff!important}
+/* リンクボタンブロック */#sheetdoc-groove .link-btns{display:flex;gap:10px;flex-wrap:wrap}#sheetdoc-groove .link-btn{display:inline-block;padding:10px 20px;border-radius:24px;background:var(--accent);color:#fff;font-weight:800;font-size:14px;text-decoration:none}#sheetdoc-groove .link-btn:hover{opacity:.88}
+/* ===== 映画サイト向け ===== */
+/* ヒーロー（ポスター＋タイトル） */#sheetdoc-groove .hero-block{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}#sheetdoc-groove .hero-img{width:min(300px,80%);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.25)}#sheetdoc-groove .hero-catch{color:var(--accent);font-weight:800}#sheetdoc-groove .hero-title{font-size:clamp(28px,6vw,44px);font-weight:900;line-height:1.25}#sheetdoc-groove .hero-date{font-weight:800;margin-top:6px}#sheetdoc-groove .hero-badge{display:inline-block;background:#e99b35;color:#fff;font-weight:800;border-radius:14px;padding:3px 14px;margin-top:10px;font-size:13px}
+@media(min-width:700px){#sheetdoc-groove .hero-block{flex-direction:row;text-align:left}#sheetdoc-groove .hero-img{width:260px;flex-shrink:0}}
+/* 予告編（クリックで読み込む） */#sheetdoc-groove .yt-facade{position:relative;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;cursor:pointer}#sheetdoc-groove .yt-facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}#sheetdoc-groove .yt-facade iframe{position:absolute;inset:0;width:100%;height:100%;border:0}#sheetdoc-groove .yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:#ff0000;border-radius:12px}#sheetdoc-groove .yt-play:after{content:'';position:absolute;top:50%;left:50%;transform:translate(-40%,-50%);border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent}
+/* 上映情報 */#sheetdoc-groove .scr-row{display:flex;flex-wrap:wrap;gap:4px 14px;padding:9px 8px;border-bottom:1px solid #e8ecee;font-size:14px;align-items:baseline}#sheetdoc-groove .scr-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .scr-date{font-weight:800;color:var(--accent);min-width:8.5em}#sheetdoc-groove .scr-venue{font-weight:700}#sheetdoc-groove .scr-note{color:var(--muted);font-size:12px;margin-left:auto;text-align:right}#sheetdoc-groove .scr-none{color:var(--muted);font-size:14px;padding:6px 2px}
+/* キャスト＆スタッフ */#sheetdoc-groove .credit-item{padding:10px 2px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .credit-item:last-child{border-bottom:0}#sheetdoc-groove .cr-name{font-size:17px;font-weight:900}#sheetdoc-groove .cr-role{color:var(--accent);font-weight:700;font-size:13px;margin-left:10px}#sheetdoc-groove .cr-profile{font-size:13px;color:#59646b;margin-top:3px;white-space:pre-wrap}
+/* 推薦コメント */#sheetdoc-groove .quote-item{margin:0 0 14px;padding:14px 16px;background:#f0f8fa;border-left:4px solid var(--accent);border-radius:0 8px 8px 0}#sheetdoc-groove .quote-item:last-child{margin-bottom:0}#sheetdoc-groove .quote-item p{margin:0;font-size:15px;font-weight:700}#sheetdoc-groove .quote-item cite{display:block;margin-top:6px;font-style:normal;font-size:12px;color:var(--muted);text-align:right}
+/* ライブハウスのイベント日程 */#sheetdoc-groove .evt-row{display:flex;gap:14px;padding:12px 8px;border-bottom:1px solid #e8ecee}#sheetdoc-groove .evt-row:last-child{border-bottom:0}#sheetdoc-groove .evt-row.today{background:#fdf6e3;border-radius:6px}#sheetdoc-groove .evt-date{font-weight:900;color:var(--accent);min-width:7.5em;font-size:14px}#sheetdoc-groove .evt-title{font-weight:900;font-size:16px}#sheetdoc-groove .evt-acts{font-size:14px;margin-top:2px}#sheetdoc-groove .evt-meta{font-size:12px;color:var(--muted);margin-top:3px}#sheetdoc-groove .evt-note{font-size:12px;color:#59646b;margin-top:2px}#sheetdoc-groove .evt-month{font-weight:900;font-size:15px;margin:18px 8px 2px}#sheetdoc-groove .evt-tail[hidden]{display:none}#sheetdoc-groove .evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
+/* ニュース */#sheetdoc-groove .news-item{display:flex;gap:12px;padding:8px 2px;border-bottom:1px solid #e8ecee;font-size:14px}#sheetdoc-groove .news-item:last-child{border-bottom:0}#sheetdoc-groove .news-date{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}#sheetdoc-groove .news-item a{color:var(--ink);font-weight:700}
+/* ライブハウス向けサンプル：ダークテーマ調整 */#sheetdoc-groove header{background:#191c20}#sheetdoc-groove .evt-row{border-bottom-color:#33383f}#sheetdoc-groove .evt-row.today{background:#3a3010}#sheetdoc-groove table.sheet th{background:#2a2e35}#sheetdoc-groove footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
+
+/*ヘッダイメージ*/#sheetdoc-groove #headIMG img{ width:100%; }
+</style>
+<script>
+/* ================================================================
+   設定はここだけ。Google側で「ウェブに公開」したURLを貼ってください。
+   url が空のブロックは表示されません。ブロックは配列の順に並びます。
+   ================================================================ */
+const CONFIG = {
+siteTitle: 'groove',
+siteSub: '沖縄・浦添市勢理客のライブハウス',
+blocks: [
+{ type: 'alert', url: 'demo:doc:alert' },
+{ type: 'doc', title: 'News', url: 'https://docs.google.com/document/d/e/2PACX-1vQbTMZsawzJP961ZSZWeevbM3nHgX8V5xYWLDWMswuzzINi1Iqx2epOSbaKbMTFJh4Zu1VBwt4UosS2/pub' },
+{ type: 'sheet-events', title: 'SCHEDULE', url: 'demo:sheet:events' },
+{ type: 'map', title: 'アクセス', url: 'demo:sheet:map', address: 'groove 沖縄県浦添市勢理客2-18-10 松本ビル', note: '勢理客バス停すぐ／国道58号 勢理客交差点角のビル地下1階。駐車場は夜間のみ（ビル裏手・500円、受付で駐車券をお受け取りください）' },
+{ type: 'doc', title: '駐車場のお知らせ', url: 'demo:doc:parking' },
+{ type: 'doc', title: 'booking', url: 'demo:doc:booking' },
+{ type: 'doc', title: 'フリーペーパー「ちかちゃん」', url: 'demo:doc:freepaper' },
+
+{ type: 'sheet-links', title: 'お問い合わせ・SNS', url: 'demo:sheet:links' }
+]
+};
+
+/* ==== デモ表示用データ（実運用時は CONFIG の demo: URL を公開URLに差し替え） ==== */
+const DEMO_SHEETS = {
+map: [
+"項目,内容",
+"住所,groove 沖縄県浦添市勢理客2-18-10 松本ビル",
+"備考,勢理客バス停すぐ／国道58号 勢理客交差点角のビル地下1階。駐車場は夜間のみ（ビル裏手・500円、受付で駐車券をお受け取りください）"
+].join('\n'),
+links: [
+'電話 098-879-4977,tel:0988794977',
+'メールで問い合わせ,mailto:groove@cosmos.ne.jp',
+'Instagram,https://www.instagram.com/okinawagroove/',
+'X（旧Twitter）,https://twitter.com/groove_gacha'
+].join('\n'),
+events: [
+"2026/11/1,昼のグルーヴ・ジャズセッション(ホストバンドkgk),kgk,OPEN 14:30 / START 15:00,\"セッション参加費 1,000円＋ドリンクオーダー\",",
+"2026/11/2,コバちゃん&くみちゃん,コバちゃん[vocal.guitar]／安達久美[guitar.vocal],OPEN 19:00 / START 20:00,\"前売 3,000円／当日 3,500円（+ドリンクオーダー）\",",
+"2026/11/3,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/11/4,TBA,,,,",
+"2026/11/5,みんみんさん沖縄来るよ〜,みんみん[vocal.guitar]／ちえみジョーンズ[vocal.guitar]／サッチー[vocal.guitar]／嘉陽秀仁[vocal.piano]／上地gacha一也,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/11/6,野村健太まつり,野村健太／ファズ大名／イトウノブヒロ／大田ヒイロ／イヴイヴ／ニコFA／宮良明璃,OPEN 19:30 / START 20:00,\"ライヴチャージ 1,500円＋ドリンクオーダー\",",
+"2026/11/7,YATARA(東京)＋ホールズ,YATARA／ホールズ／本永寛人／ファズ大名,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/11/8,田辺由貴 New Album「あんしかなし＿Okinawa minyo's flow」レコ発ライヴ,田辺由貴／川崎巽也／上地gacha一也／神里利枝／津嶋利仁／中野夢／ニシャッド マニッシュ,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",予約・お問合せ：fznabe.rpki@gmail.com",
+"2026/11/10,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/11/11,Jazz Session & Jazz Bar (Jazz),セッションホスト：田中祥子[piano]／城間俊[drums]／上地gacha一也[double-bass],OPEN 19:30 / START 20:00,ドリンクオーダー,セッション参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/11/12,SUN POWER MUSIC JAZZ SESSION (Jazz),友寄隆哉（伴奏）ほか,OPEN 20:00 / START 21:00,\"セッション参加者 1set 1,000円＋ドリンクオーダー\",見学者は無料（ドリンクオーダーお願いします）。参加者大歓迎",
+"2026/11/13,Jazz Live & Session ニコFA／バンズカルテット,ニコFA／バンズカルテット,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/11/14,貸し切り,,17:30〜21:30,,",
+"2026/11/19,ウィリー & 国吉亮,ウィリー[bass.vocal]／国吉亮[guitar.vocal],OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/11/20,マルチーズロック,マルチーズロック,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",※時間は説明文の表記（カレンダー登録は18:00〜19:00）",
+"2026/11/21,音楽で繋ごうチャリティLIVE,UT'S（沖縄本島）／三色ノート(from宮古島)／松原秀明(from東京),OPEN 19:00 / START 19:30,\"ライヴチャージ 1,500円＋ドリンクオーダー\",",
+"2026/11/22,大人の学芸会,大人の学芸会,17:00〜18:00,,",
+"2026/11/24,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/11/25,\"牧野Moto元昭・豊崎一生・藏方 \"\"Jeff\"\" 正仁\",\"牧野Moto元昭[guitar]／豊崎一生[drums]／藏方 \"\"Jeff\"\" 正仁[bass]\",OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",\"セッション参加者は1,500円＋ドリンクオーダー\"",
+"2026/11/26,沢田穣治・本田素子DUO／KgK,沢田穣治[ギター]／本田素子[ボーカル]／KgK（川崎巽也[guitar]／上地gacha一也[double-bass]／城間和広[drums]）,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",",
+"2026/11/27,Jimi Hendrix Tribute Live,Kiga Hendrix／城間和広／gacha,START 21:00,,ジミ・ヘンドリックス トリビュートライヴ「ハッピーバースデー ジミ！」",
+"2026/11/28,Urasoe,Summer Eye,OPEN 16:00 / START 16:30,\"前売 3,500円／当日 4,000円（+ドリンクオーダー）\",予約：メール bonvoyage.naha@gmail.com／Instagram @bonvoyage.naha",
+"2026/11/28,ジャガー・イケミ(博多ザ・ブリスコ)／知念詩導宜野湾カントリーズ,ジャガー・イケミ（博多ザ・ブリスコ）from 福岡／知念詩導宜野湾カントリーズ,OPEN 20:30 / START 21:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/11/29,ハシケン・下地イサム 『ソロで二人会』,ハシケン[vocal.guitar]／下地イサム[vocal.guitar],OPEN 18:30 / START 19:00,\"前売 3,000円／当日 3,500円（+ドリンクオーダー）\",",
+"2026/11/30,KgK × ykTy,KgK（川崎巽也[guitar]／上地gacha一也[double-bass]／城間和広[drums]）／YkTy（竹下勇馬[mechanised instruments]／オータコージ[drums]／石原岳[guitar]／石原雄治[drums]）,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",整体：クロスタイチ（くろさわ整体院）",
+"2026/12/1,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/12/2,能太鼓とコントラバス,吉谷潔[能太鼓]／上地gacha一也[コントラバス]／ゲスト 石原岳[ギター],OPEN 19:30 / START 20:00,\"ライヴチャージ 2,500円＋ドリンクオーダー\",",
+"2026/12/4,歌モノいんぷろ師走祭,ファズ大名／abukutatta＆宮里青志＆安田陽,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/12/5,the you LIVE at groove,the you／EXOTICnagoz／T-RIM,OPEN 18:30 / START 19:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/12/8,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/12/9,Jazz Session & Jazz Bar (Jazz),セッションホスト：田中祥子[piano]／城間俊[drums]／上地gacha一也[double-bass],OPEN 19:30 / START 20:00,ドリンクオーダー,セッション参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/12/10,Twumeethin-Twumeeran (Jazz),崎山孝[guitar]／川崎巽也[guitar]／屋比久猛吉[drums]／上地gacha一也[double-bass],OPEN 20:30 / START 21:00,\"ライヴチャージ 1,500円＋ドリンクオーダー\",",
+"2026/12/12,KING BROTHERS ONEMAN TOUR 『WASTELAND 2026』TOUR FINAL at 沖縄・浦添GROOVE,KING BROTHERS／Opening Act：offseason(from 沖縄),OPEN 18:00 / START 19:00,\"前売 4,500円（KINGBROS WEB）／一般前売 5,000円（全て1ドリンク別）\",\"12/13アフターパーティ付き前売 10,000円（枚数限定）。学生は学生証提示で1,000円キャッシュバック。チケット購入先：Peatix\"",
+"2026/12/13,ワンチャイコネクションpre. アンチサブカルチャークラブ DAY2 @浦添groove,bulbs of passion(東京)／Slowmarico(東京)／owlgall／AKKANBABYS／ワンチャイコネクション,OPEN 17:30 / START 18:00,,",
+"2026/12/19,\"aruoto presents \"\"在る音 Vol.2\"\"\",AKKANBABYS／オストアンデル／aruoto,OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/12/20,メカデリックカーニバル19 【OKINAWA DEEP DIVE！】,メカルジン／TOCOBS／知念詩導 宜野湾カントリーズ,OPEN 18:00 / START 18:30,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/12/22,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/12/23,SUN POWER MUSIC JAZZ SESSION (Jazz),友寄隆哉（伴奏）ほか,OPEN 20:00 / START 21:00,\"セッション参加者 1set 1,000円＋ドリンクオーダー\",見学者は無料（ドリンクオーダーお願いします）。参加者大歓迎",
+"2026/12/27,Duke Ellington＆Charles Mingus (jazz),高尾しおり[trombone]／川崎巽也[guitar]／知念憙哉[guitar]／上地gacha一也[double-bass],OPEN 19:30 / START 20:00,\"ライヴチャージ 2,000円＋ドリンクオーダー\",",
+"2026/12/28,TBA,,,,",
+"2026/12/29,Let's Jam Session,,OPEN 20:00,ドリンクオーダー,毎週火曜のジャムセッション。参加費なし（ドリンク2杯以上の注文をお願いします）",
+"2026/12/30,下地イサム Sweet Home 勢理客 Vol.50 2026 歌い納め！イサムLIVE!!,\"下地イサム（Vo/Gt）／當間嗣篤（Dr）／儀保ノーリー（Perc）／上地\"\"gacha\"\"一也（Ba）\",OPEN 19:30 / START 20:00,\"4,000円＋ドリンクオーダー\",定員40名・メール受付のみ（groove@cosmos.ne.jp）。1通で2名まで",
+"2026/12/31,All Night Jam Session さよなら2026〜ようこそ2027,,START 20:00,,"
+].join('\n'),
+
+};
+const DEMO_DOCS = {
+alert: '<p><strong>【本日】</strong>台風接近のため、開場・開演を30分繰り下げます（開場 18:30／開演 19:00）。足元にお気をつけてお越しください。</p>',
+news: '<p style="font-size:20px;font-weight:bold">ライブ出演者を募集しています</p>' +
+'<p>grooveでは出演者を随時募集しています。ジャンルは問いません。ライブをやってみたい方、表現の場を探している方は、下の「booking」をご覧のうえ、電話またはメールでご連絡ください。</p>',
+parking: '<p>grooveのある勢理客交差点の角にある勢理客産業ビル裏手の駐車場を、夜はgrooveが管理しています。駐車する方はgroove受付で駐車券を受け取り、車のダッシュボードへ置いて下さい。駐車料金は駐車券と引き換えにgroove受付でお支払いください。料金は500円です。</p>' +
+'<p>・必ずgrooveで駐車券を受け取って駐車して下さい。<br>・駐車場内では騒いだり、大声で話したりしないで下さい。<br>・駐車券の無い車両はレッカー移動されます。<br>・勢理客産業さんのご好意で使わせていただいているのでルールは守って下さい。</p>' +
+'<p>よろしくお願いします。</p>' +
+'<p>バスでお越しの方：勢理客バス停（20・21・22・23・24・27・28・29・31・63・88・120系統）が最寄りです。</p>',
+booking: '<p>もしあなたが、ライブや、他の何かを表現したいと思ったら、grooveまで連絡下さい。grooveはあなたの力になれるはずです。</p>' +
+'<p>E-mail：groove@cosmos.ne.jp<br>Tel：098-879-4977<br>Address：沖縄県浦添市勢理客2-18-10 地下1階</p>' +
+'<p><img style="width:49%;vertical-align:top" src="https://basefile.akamaized.net/grooveline/63a850487a5c6/siba1.jpg" alt=""> <img style="width:49%;vertical-align:top" src="https://basefile.akamaized.net/grooveline/63a8505c711c4/bass.jpg" alt=""></p>',
+freepaper: '<p>ちかちゃんは、grooveのフリーペーパーの名前です。</p>' +
+'<p>勢理客百景の知名定勝さん、音楽妖怪図鑑のナオキ屋さん、よ太話のヨシトアンデルさん、TOMORROW GIRLSの森田恵美子さん、無口な彼もあら不思議！お酒があればごきげんよう！のgachaさん、配布係の宮里隼斗さんの協力で作られています！</p>' +
+'<p>フリーペーパーちかちゃんを置いていただけるお店ありましたらよろしくお願いします。ちかちゃんの原稿を書いたり編集したり出来る人を募集中！詳しくはgrooveまで。</p>',
+instagram: '<p><a href="https://www.instagram.com/okinawagroove/"><img src="https://basefile.akamaized.net/grooveline/64f88b645bb39/instagram.png" alt="Instagram @okinawagroove"></a></p>'
+};
+const _fetch = window.fetch.bind(window);
+window.fetch = function(url, opts) {
+if (typeof url === 'string' && url.indexOf('demo:sheet:') === 0) {
+const name = url.slice('demo:sheet:'.length);
+return Promise.resolve(new Response(DEMO_SHEETS[name] || '', { status: 200 }));
+}
+if (typeof url === 'string' && url.indexOf('demo:doc:') === 0) {
+const name = url.slice('demo:doc:'.length);
+const html = '<html><head></head><body><div id="contents"><style>.c1{font-weight:bold}</style>' +
+(DEMO_DOCS[name] || '') + '</div></body></html>';
+return Promise.resolve(new Response(html, { status: 200 }));
+}
+return _fetch(url, opts);
+};
+
+/* ================= 以下、処理部分（通常は編集不要） ================= */
+
+/* BASE組み込み版：ページ側の見出しを使うため、タイトル書き込みは行わない */
+
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  return lines.map(line => {
+    const row = [];
+    let insideQuote = false, cell = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        if (insideQuote && line[i+1] === '"') { cell += '"'; i++; }
+        else { insideQuote = !insideQuote; }
+      } else if (c === ',' && !insideQuote) {
+        row.push(cell.trim()); cell = '';
+      } else {
+        cell += c;
+      }
+    }
+    row.push(cell.trim());
+    return row;
+  });
+}
+
+// ドキュメント側のスタイルシートを、取り込み先ブロックの中だけに効くよう書き換える
+// （ブロックごとにスコープを分けるので、複数ドキュメントでもスタイルが衝突しません）
+function scopeCss(cssText, scope) {
+  const imports = [];
+  const css = cssText.replace(/@import[^;]+;/g, m => { imports.push(m); return ''; });
+  const rules = css.split('}').map(r => r.trim()).filter(Boolean).map(rule => {
+    const i = rule.indexOf('{');
+    if (i < 0) return '';
+    const selectors = rule.slice(0, i).split(',').map(s => s.trim())
+      .filter(s => s && !/^(html|body|:root)/.test(s));
+    if (!selectors.length) return '';
+    return selectors.map(s => scope + ' ' + s).join(',') + '{' + rule.slice(i + 1) + '}';
+  }).filter(Boolean).join('\n');
+  return imports.join('\n') + '\n' + rules;
+}
+
+async function renderDoc(block, section, index) {
+  if (!block.url) throw new Error('URL未設定');
+  let url = block.url;
+  if (/\/pub$/.test(url)) url += '?embedded=true';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Doc取得エラー');
+  const parsed = new DOMParser().parseFromString(await res.text(), 'text/html');
+  const contents = parsed.querySelector('#contents');
+  if (!contents) throw new Error('Doc解析エラー');
+  if (!contents.textContent.trim()) throw new Error('内容なし'); // 空の文書は欄ごと出さない
+  const scopeClass = 'gdoc-' + index;
+  let css = '';
+  parsed.querySelectorAll('style').forEach(s => { css += s.textContent + '\n'; });
+  const styleEl = document.createElement('style');
+  styleEl.textContent = scopeCss(css, '.' + scopeClass);
+  document.head.appendChild(styleEl);
+  const div = document.createElement('div');
+  div.className = 'gdoc ' + scopeClass;
+  div.innerHTML = contents.innerHTML;
+  div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+  section.appendChild(div);
+}
+
+async function fetchSheetRows(block) {
+  if (!block.url) throw new Error('URL未設定');
+  let url = block.url;
+  if (/\/pub$/.test(url)) url += '?output=csv';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Sheet取得エラー');
+  return parseCSV(await res.text());
+}
+
+async function renderSheetTable(block, section) {
+  const rows = await fetchSheetRows(block);
+  if (!rows.length) throw new Error('データなし');
+  const [head, ...body] = rows;
+  const html = '<div class="table-wrap"><table class="sheet"><thead><tr>' +
+    head.map(c => '<th>' + escapeHtml(c) + '</th>').join('') +
+    '</tr></thead><tbody>' +
+    body.map(r => '<tr>' + head.map((_, i) => '<td>' + escapeHtml(r[i] || '') + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table></div>';
+  section.insertAdjacentHTML('beforeend', html);
+}
+
+async function renderSheetList(block, section) {
+  const rows = await fetchSheetRows(block);
+  const items = rows.filter(r => r[0]);
+  if (!items.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', items.map(r =>
+    '<div class="list-item"><div class="li-title">' + escapeHtml(r[0]) + '</div>' +
+    (r[1] ? '<div class="li-body">' + escapeHtml(r[1]) + '</div>' : '') + '</div>'
+  ).join(''));
+}
+
+/* ===== 店舗向けブロック ===== */
+
+// 先頭行が「品名」「価格」のような見出し行だった場合は自動で読み飛ばす
+// （編集する人が見出し行を足してしまっても壊れないようにするため）
+function dropHeader(rows, colWords) {
+  if (!rows.length) return rows;
+  const first = rows[0].map(c => (c || '').trim());
+  const looksHeader = colWords.some((words, i) => words.includes(first[i]));
+  return looksHeader ? rows.slice(1) : rows;
+}
+
+async function renderSheetMenu(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['品名', 'メニュー', '商品名', '名前'], ['価格', '料金', '値段']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', rows.map(r =>
+    '<div class="menu-item"><span class="m-name">' + escapeHtml(r[0]) + '</span>' +
+    '<span class="m-dots"></span><span class="m-price">' + escapeHtml(r[1] || '') + '</span></div>' +
+    (r[2] ? '<div class="menu-desc">' + escapeHtml(r[2]) + '</div>' : '')
+  ).join(''));
+}
+
+async function renderSheetHours(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['曜日'], ['営業時間', '時間']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  const today = ['日', '月', '火', '水', '木', '金', '土'][new Date().getDay()];
+  section.insertAdjacentHTML('beforeend', rows.map(r => {
+    const isToday = (r[0] || '').trim().charAt(0) === today;
+    return '<div class="hours-row' + (isToday ? ' today' : '') + '">' +
+      '<span class="h-day">' + escapeHtml(r[0]) + (isToday ? '<span class="h-badge">本日</span>' : '') + '</span>' +
+      '<span>' + escapeHtml(r[1] || '') + '</span>' +
+      (r[2] ? '<span class="h-note">' + escapeHtml(r[2]) + '</span>' : '') + '</div>';
+  }).join(''));
+}
+
+function toImageUrl(u) {
+  const m = String(u).match(/drive\.google\.com\/file\/d\/([^/]+)/) || String(u).match(/[?&]id=([\w-]{20,})/);
+  return m ? 'https://drive.google.com/thumbnail?id=' + m[1] + '&sz=w1000' : u;
+}
+
+async function renderSheetGallery(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['画像URL', 'URL', '画像', '写真'], ['キャプション', '説明', 'タイトル']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', '<div class="gallery">' + rows.map(r =>
+    '<figure><img src="' + escapeHtml(toImageUrl(r[0])) + '" alt="' + escapeHtml(r[1] || '') + '" loading="lazy">' +
+    (r[1] ? '<figcaption>' + escapeHtml(r[1]) + '</figcaption>' : '') + '</figure>'
+  ).join('') + '</div>');
+}
+
+async function renderMap(block, section) {
+  let address = block.address, note = block.note;
+  if (block.url) {
+    try {
+      const rows = await fetchSheetRows(block);
+      const kv = {};
+      rows.forEach(r => { if (r[0]) kv[r[0].trim()] = (r[1] || '').trim(); });
+      if (kv['住所']) address = kv['住所'];
+      if (kv['備考']) note = kv['備考'];
+    } catch (e) { /* シートが読めない場合は CONFIG の値で表示する */ }
+  }
+  if (!address) throw new Error('住所未設定');
+  section.insertAdjacentHTML('beforeend',
+    '<iframe class="map-frame" loading="lazy" src="https://www.google.com/maps?q=' +
+    encodeURIComponent(address) + '&output=embed"></iframe>' +
+    '<div class="map-address">' + escapeHtml(address) +
+    '（<a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address) +
+    '" target="_blank" rel="noopener">Googleマップで開く</a>）</div>' +
+    (note ? '<div class="map-note">' + escapeHtml(note) + '</div>' : ''));
+}
+
+function renderLinks(block, section) {
+  if (!block.items || !block.items.length) throw new Error('リンク未設定');
+  section.insertAdjacentHTML('beforeend', '<div class="link-btns">' + block.items.map(it =>
+    '<a class="link-btn" href="' + escapeHtml(it.url) + '"' +
+    (/^https?:/.test(it.url) ? ' target="_blank" rel="noopener"' : '') + '>' + escapeHtml(it.label) + '</a>'
+  ).join('') + '</div>');
+}
+
+// リンク集（シート版）：1列目=ラベル、2列目=URL。表示は links と同じボタン
+async function renderSheetLinks(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block), [['ラベル', '表示名', 'label', 'テキスト'], ['URL', 'url', 'リンク', 'アドレス']])
+    .filter(r => r[0] && r[1]);
+  if (!rows.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', '<div class="link-btns">' + rows.map(r =>
+    '<a class="link-btn" href="' + escapeHtml(r[1].trim()) + '"' +
+    (/^https?:/.test(r[1].trim()) ? ' target="_blank" rel="noopener"' : '') + '>' + escapeHtml(r[0]) + '</a>'
+  ).join('') + '</div>');
+}
+
+/* ===== 映画サイト向けブロック ===== */
+
+// 日付セルの読み取り（2026/12/5、2026-12-05、12/5 に対応。読めなければ null）
+function parseDateCell(s) {
+  if (!s) return null;
+  const str = String(s);
+  let m = str.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  m = str.match(/(\d{1,2})[\/\-.](\d{1,2})/);
+  if (m) return new Date(new Date().getFullYear(), +m[1] - 1, +m[2]);
+  return null;
+}
+
+function renderHero(block, section) {
+  if (!block.image && !block.title) throw new Error('ヒーロー未設定');
+  let badge = '';
+  const d = parseDateCell(block.date);
+  if (d) {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const diff = Math.round((d - today) / 86400000);
+    if (diff > 0) badge = '<span class="hero-badge">公開まであと' + diff + '日</span>';
+    else if (diff === 0) badge = '<span class="hero-badge">本日公開！</span>';
+  }
+  section.innerHTML =
+    (block.image ? '<img class="hero-img" src="' + escapeHtml(toImageUrl(block.image)) + '" alt="">' : '') +
+    '<div class="hero-text">' +
+    (block.catch ? '<div class="hero-catch">' + escapeHtml(block.catch) + '</div>' : '') +
+    '<div class="hero-title">' + escapeHtml(block.title || '') + '</div>' +
+    (block.dateLabel ? '<div class="hero-date">' + escapeHtml(block.dateLabel) + '</div>' : '') +
+    badge + '</div>';
+}
+
+function renderYoutube(block, section) {
+  const src = String(block.videoId || block.url || '');
+  const m = src.match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/)([\w-]{6,})/);
+  const id = m ? m[1] : src.trim();
+  if (!id) throw new Error('動画ID未設定');
+  const div = document.createElement('div');
+  div.className = 'yt-facade';
+  div.innerHTML = '<img src="https://i.ytimg.com/vi/' + escapeHtml(id) + '/hqdefault.jpg" alt="予告編"><span class="yt-play"></span>';
+  div.addEventListener('click', () => {
+    div.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + escapeHtml(id) +
+      '?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+  });
+  section.appendChild(div);
+}
+
+async function renderSheetScreenings(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['日付', '上映日'], ['劇場', '会場', '上映館']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
+    .filter(x => !x.d || x.d >= today) // 終わった上映は自動で消す（日付が読めない行は告知として残す）
+    .sort((a, b) => (a.d ? a.d.getTime() : Infinity) - (b.d ? b.d.getTime() : Infinity)); // 日付なし行は末尾
+  if (!items.length) {
+    section.insertAdjacentHTML('beforeend',
+      '<div class="scr-none">上映は終了しました。新しい上映情報は決まり次第お知らせします。</div>');
+    return;
+  }
+  const W = ['日', '月', '火', '水', '木', '金', '土'];
+  section.insertAdjacentHTML('beforeend', items.map(({ r, d }) => {
+    const isToday = d && d.getTime() === today.getTime();
+    const dateText = d ? (d.getMonth() + 1) + '月' + d.getDate() + '日（' + W[d.getDay()] + '）' : r[0];
+    return '<div class="scr-row' + (isToday ? ' today' : '') + '">' +
+      '<span class="scr-date">' + escapeHtml(dateText) + (isToday ? '<span class="h-badge">本日</span>' : '') + '</span>' +
+      '<span class="scr-venue">' + escapeHtml(r[1] || '') + '</span>' +
+      '<span class="scr-time">' + escapeHtml(r[2] || '') + '</span>' +
+      (r[3] ? '<span class="scr-note">' + escapeHtml(r[3]) + '</span>' : '') + '</div>';
+  }).join(''));
+}
+
+async function renderSheetCredits(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['名前', '氏名'], ['役名', '担当', '役職']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', rows.map(r =>
+    '<div class="credit-item"><div><span class="cr-name">' + escapeHtml(r[0]) + '</span>' +
+    (r[1] ? '<span class="cr-role">' + escapeHtml(r[1]) + '</span>' : '') + '</div>' +
+    (r[2] ? '<div class="cr-profile">' + escapeHtml(r[2]) + '</div>' : '') + '</div>'
+  ).join(''));
+}
+
+async function renderSheetQuotes(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['推薦文', 'コメント', 'ひと言'], ['推薦者', '名前', '氏名']]).filter(r => r[0]);
+  if (!rows.length) throw new Error('データなし');
+  section.insertAdjacentHTML('beforeend', rows.map(r =>
+    '<blockquote class="quote-item"><p>' + escapeHtml(r[0]) + '</p>' +
+    (r[1] ? '<cite>' + escapeHtml(r[1]) + (r[2] ? '（' + escapeHtml(r[2]) + '）' : '') + '</cite>' : '') + '</blockquote>'
+  ).join(''));
+}
+
+async function renderSheetNews(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['日付'], ['見出し', 'タイトル', 'お知らせ']]).filter(r => r[1]);
+  if (!rows.length) throw new Error('データなし');
+  const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
+    .sort((a, b) => (b.d || 0) - (a.d || 0)); // 新しい順
+  section.insertAdjacentHTML('beforeend', items.map(({ r, d }) => {
+    const dateText = d ? d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0') : (r[0] || '');
+    const head = escapeHtml(r[1]);
+    return '<div class="news-item"><span class="news-date">' + escapeHtml(dateText) + '</span><span>' +
+      (r[2] ? '<a href="' + escapeHtml(r[2]) + '" target="_blank" rel="noopener">' + head + '</a>' : head) +
+      '</span></div>';
+  }).join(''));
+}
+
+// 緊急バナー：ドキュメントに書けば表示され、空にすれば消える（操作はお知らせと全く同じ）
+async function renderAlert(block, section, index) {
+  if (!block.url) throw new Error('URL未設定');
+  let url = block.url;
+  if (/\/pub$/.test(url)) url += '?embedded=true';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Doc取得エラー');
+  const parsed = new DOMParser().parseFromString(await res.text(), 'text/html');
+  const contents = parsed.querySelector('#contents');
+  if (!contents) throw new Error('Doc解析エラー');
+  if (!contents.textContent.trim()) throw new Error('内容なし');
+  const scopeClass = 'gdoc-alert-' + index;
+  let css = '';
+  parsed.querySelectorAll('style').forEach(s => { css += s.textContent + '\n'; });
+  const styleEl = document.createElement('style');
+  styleEl.textContent = scopeCss(css, '.' + scopeClass);
+  document.head.appendChild(styleEl);
+  const div = document.createElement('div');
+  div.className = 'gdoc ' + scopeClass;
+  div.innerHTML = contents.innerHTML;
+  div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+  section.appendChild(div);
+}
+
+async function renderSheetEvents(block, section) {
+  const rows = dropHeader(await fetchSheetRows(block),
+    [['日付', '開催日'], ['イベント名', 'タイトル', 'ライブ名']]).filter(r => r[0] || r[1]);
+  if (!rows.length) throw new Error('データなし');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
+    .filter(x => !x.d || x.d >= today) // 終わったライブは自動で消す
+    .sort((a, b) => (a.d ? a.d.getTime() : Infinity) - (b.d ? b.d.getTime() : Infinity));
+  if (!items.length) {
+    section.insertAdjacentHTML('beforeend',
+      '<div class="scr-none">現在予定されているライブはありません。決まり次第お知らせします。</div>');
+    return;
+  }
+  const W = ['日', '月', '火', '水', '木', '金', '土'];
+  const rowHtml = ({ r, d }) => {
+    const isToday = d && d.getTime() === today.getTime();
+    const dateText = d ? (d.getMonth() + 1) + '月' + d.getDate() + '日（' + W[d.getDay()] + '）' : r[0];
+    const meta = [r[3], r[4]].filter(Boolean).map(escapeHtml).join('　／　');
+    return '<div class="evt-row' + (isToday ? ' today' : '') + '">' +
+      '<div class="evt-date">' + escapeHtml(dateText) + (isToday ? '<span class="h-badge">本日</span>' : '') + '</div>' +
+      '<div class="evt-body"><div class="evt-title">' + escapeHtml(r[1] || '') + '</div>' +
+      (r[2] ? '<div class="evt-acts">' + escapeHtml(r[2]) + '</div>' : '') +
+      (meta ? '<div class="evt-meta">' + meta + '</div>' : '') +
+      (r[5] ? '<div class="evt-note">' + escapeHtml(r[5]) + '</div>' : '') + '</div></div>';
+  };
+  const monthLabel = d => d ? d.getFullYear() + '年' + (d.getMonth() + 1) + '月' : '日付未定';
+  const groupedHtml = list => {
+    let html = '', last = null;
+    list.forEach(x => {
+      const label = monthLabel(x.d);
+      if (label !== last) { html += '<div class="evt-month">' + label + '</div>'; last = label; }
+      html += rowHtml(x);
+    });
+    return html;
+  };
+  const INITIAL = 10; // 最初に表示する件数（残りは「もっと見る」で開く）
+  const head = items.slice(0, INITIAL), tail = items.slice(INITIAL);
+  let html = groupedHtml(head);
+  if (tail.length) {
+    html += '<div class="evt-tail" hidden>' + groupedHtml(tail) + '</div>' +
+      '<button type="button" class="evt-more-btn">もっと見る（残り' + tail.length + '件）</button>';
+  }
+  section.insertAdjacentHTML('beforeend', html);
+  const btn = section.querySelector('.evt-more-btn');
+  if (btn) btn.addEventListener('click', () => {
+    section.querySelector('.evt-tail').hidden = false;
+    btn.remove();
+  });
+}
+
+const RENDERERS = {
+  'doc': renderDoc, 'alert': renderAlert, 'sheet-table': renderSheetTable, 'sheet-list': renderSheetList,
+  'sheet-menu': renderSheetMenu, 'sheet-hours': renderSheetHours, 'sheet-gallery': renderSheetGallery,
+  'map': renderMap, 'links': renderLinks, 'sheet-links': renderSheetLinks,
+  'hero': renderHero, 'youtube': renderYoutube,
+  'sheet-screenings': renderSheetScreenings, 'sheet-credits': renderSheetCredits,
+  'sheet-quotes': renderSheetQuotes, 'sheet-news': renderSheetNews,
+  'sheet-events': renderSheetEvents
+};
+
+async function loadBlocks() {
+  const main = document.getElementById('sdg-blocks');
+  for (let i = 0; i < CONFIG.blocks.length; i++) {
+    const block = CONFIG.blocks[i];
+    if (!RENDERERS[block.type]) continue;
+    const section = document.createElement('section');
+    if (block.type === 'hero') {
+      section.className = 'hero-block'; // ヒーローはカード見出しなしで大きく出す
+    } else if (block.type === 'alert') {
+      section.className = 'alert-block'; // 緊急バナーも見出しなし
+    } else {
+      section.className = 'block';
+      section.innerHTML = '<h2>' + escapeHtml(block.title || '') + '</h2><div class="loading">読み込み中...</div>';
+    }
+    main.appendChild(section);
+    try {
+      await RENDERERS[block.type](block, section, i);
+      section.querySelector('.loading')?.remove();
+    } catch (err) {
+      console.error('ブロック読み込みエラー:', block.title, err);
+      section.remove(); // 取得に失敗したブロックは表示しない
+    }
+  }
+}
+
+loadBlocks();
+</script>
