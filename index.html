@@ -9,39 +9,40 @@
 :root{
   --accent:#ffb340;        /* アクセントカラー */
   --ink:#ece9e2;           /* 文字色 */
-  --muted:#9aa3ab;         /* 補足テキスト色 */
+  --muted:#a9b2ba;         /* 補足テキスト色 */
   --line:#343a41;          /* 罫線色 */
   --paper:#131518;         /* 背景色 */
   --card:#1d2025;          /* カード背景 */
   --radius:12px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.6}
-header{background:#fff;border-bottom:4px solid var(--accent);padding:26px max(18px,calc((100% - 960px)/2))}
-header .site-title{font-size:clamp(24px,5vw,36px);font-weight:900;margin:0}
-header .site-sub{color:var(--muted);font-size:13px;margin-top:4px}
-main{max-width:960px;margin:22px auto;padding:0 14px 40px;display:grid;gap:16px}
-.block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
-.block>h2{font-size:18px;margin:0 0 10px;color:var(--accent)}
-.block .loading{color:var(--muted);font-size:13px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:16px;line-height:1.75}
+header{background:#fff;border-bottom:1px solid var(--line);padding:30px max(18px,calc((100% - 960px)/2)) 26px}
+header .site-title{font-size:clamp(26px,5vw,38px);font-weight:900;margin:0;line-height:1.3;letter-spacing:.02em}
+header .site-title::after{content:'';display:block;width:52px;height:4px;background:var(--accent);border-radius:2px;margin-top:12px}
+header .site-sub{color:var(--muted);font-size:14px;margin-top:6px}
+main{max-width:960px;margin:26px auto;padding:0 14px 48px;display:grid;gap:24px}
+.block{background:var(--card);border-radius:var(--radius);padding:22px 24px;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.block>h2{font-size:19px;margin:0 0 14px;color:var(--ink);font-weight:800;line-height:1.4;border-left:5px solid var(--accent);padding-left:11px}
+.block .loading{color:var(--muted);font-size:14px}
 /* ドキュメント取り込み部（Google側のスタイルはJSでこの中だけに閉じ込めます） */
 .gdoc{overflow-x:auto}
 .gdoc .doc-content{padding:0!important;max-width:none!important}
 /* ドキュメント本文は Doc 側の色に関わらず読みやすい色に固定する */
 .gdoc, .gdoc p, .gdoc span, .gdoc li, .gdoc td, .gdoc th,
 .gdoc h1, .gdoc h2, .gdoc h3, .gdoc h4, .gdoc h5, .gdoc h6 { color: #ece9e2 !important; }
-.gdoc a { color: #ffb59d !important; text-decoration: underline; }
+.gdoc a { color: #ffd08a !important; text-decoration: underline; }
 .gdoc img{max-width:100%;height:auto}
 /* 表ブロック（列が多い表はカード内で横スクロール） */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table.sheet{border-collapse:collapse;width:100%;font-size:14px}
+table.sheet{border-collapse:collapse;width:100%;font-size:15px}
 table.sheet th,table.sheet td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
 table.sheet th{background:#f0f8fa;font-weight:800}
 /* リストブロック */
 .list-item{padding:10px 2px;border-bottom:1px solid #e8ecee}
 .list-item:last-child{border-bottom:0}
 .list-item .li-title{font-weight:800}
-.list-item .li-body{font-size:13px;color:#59646b;margin-top:2px;white-space:pre-wrap}
+.list-item .li-body{font-size:14px;color:var(--muted);margin-top:3px;white-space:pre-wrap;line-height:1.7}
 /* メニューブロック（点線リーダー＋価格右寄せ） */
 .menu-item{display:flex;align-items:baseline;gap:8px;padding:7px 2px}
 .menu-item .m-name{font-weight:700}
@@ -62,8 +63,8 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .gallery figcaption{font-size:12px;color:#59646b;margin-top:4px;text-align:center}
 /* 地図ブロック */
 .map-frame{width:100%;height:320px;border:0;border-radius:8px}
-.map-address{font-size:14px;margin-top:8px}
-.map-note{font-size:12px;color:var(--muted)}
+.map-address{font-size:15px;margin-top:8px}
+.map-note{font-size:13px;color:var(--muted)}
 /* 緊急バナー（ドキュメント連動。空なら出ない） */
 .alert-block{background:#b91c1c;color:#fff;border-radius:var(--radius);padding:16px 20px;font-weight:700}
 .alert-block .gdoc,.alert-block .gdoc *{color:#fff!important}
@@ -74,7 +75,7 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .link-btn{overflow-wrap:anywhere}
 @media (max-width:560px){.link-btns{flex-direction:column;align-items:stretch}.link-btn{text-align:center}}
 
-.link-btn{display:inline-block;padding:11px 22px;border-radius:24px;background:var(--accent);color:#241a05;font-weight:800;font-size:16px;text-decoration:none}
+.link-btn{display:inline-block;padding:11px 22px;border-radius:10px;background:var(--accent);color:#241a05;font-weight:800;font-size:16px;text-decoration:none}
 .link-btn:hover{opacity:.88}
 /* ===== 映画サイト向け ===== */
 /* ヒーロー（ポスター＋タイトル） */
@@ -113,15 +114,21 @@ table.sheet th{background:#f0f8fa;font-weight:800}
 .evt-row{display:flex;gap:14px;padding:12px 8px;border-bottom:1px solid #e8ecee}
 .evt-row:last-child{border-bottom:0}
 .evt-row.today{background:#fdf6e3;border-radius:6px}
-.evt-date{font-weight:900;color:var(--accent);min-width:7.5em;font-size:14px}
+.evt-date{font-weight:900;color:var(--accent);min-width:7.5em;font-size:14px;font-variant-numeric:tabular-nums}
 .evt-title{font-weight:900;font-size:16px}
 .evt-acts{font-size:14px;margin-top:2px}
-.evt-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.evt-meta{font-size:13px;color:var(--muted);margin-top:3px}
 .evt-note{font-size:12px;color:#59646b;margin-top:2px}
 .evt-month{font-weight:900;font-size:15px;margin:18px 8px 2px}
 .evt-tail[hidden]{display:none}
-.evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:24px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
-.evt-link-btn{display:inline-block;margin-top:9px;padding:8px 20px;border-radius:20px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}
+.evt-more-btn{display:block;margin:14px auto 6px;padding:9px 28px;border-radius:10px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:800;font-size:14px;cursor:pointer}
+.evt-link-btn{display:inline-block;margin-top:9px;padding:8px 20px;border-radius:10px;background:var(--accent);color:#241a05;font-weight:800;font-size:14px;text-decoration:none}
+
+.scr-row{font-size:15px}
+.scr-time{font-weight:800}
+.scr-note{font-size:13px}
+.scr-row .evt-link-btn{margin-top:2px;padding:5px 14px;font-size:13px}
+
 
 
 .evt-archive-btn{margin-top:22px}
@@ -156,7 +163,7 @@ header{background:#191c20}
 .evt-row{border-bottom-color:#33383f}
 .evt-row.today{background:#3a3010}
 table.sheet th{background:#2a2e35}
-footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:12px}
+footer{max-width:960px;margin:0 auto;padding:0 18px 30px;color:var(--muted);font-size:13px}
 
 /*ヘッダイメージ*/
 #headIMG img{ width:100%; }
@@ -249,6 +256,43 @@ async function fetchImageBlob(url, tries) {
   }
   return null;
 }
+// ドキュメント本文中の「文字列のままのURL」をリンクにする（既にリンクになっている部分は触らない）
+function linkifyUrls(root) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !/https?:\/\//.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+      if (node.parentElement && node.parentElement.closest('a, script, style')) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const targets = [];
+  while (walker.nextNode()) targets.push(walker.currentNode);
+  targets.forEach(node => {
+    const text = node.nodeValue;
+    const frag = document.createDocumentFragment();
+    const re = /https?:\/\/[^\s<>"'、。，．・「」『』【】〈〉（）！？]+/g;
+    let last = 0, m, linked = false;
+    while ((m = re.exec(text))) {
+      let url = m[0];
+      while (/[.,;:!?]$/.test(url)) url = url.slice(0, -1); // 文末の句読点はURLに含めない
+      if (url.endsWith(')') && !url.includes('(')) url = url.slice(0, -1);
+      if (!url) continue;
+      frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+      const a = document.createElement('a');
+      a.href = url;
+      a.textContent = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      frag.appendChild(a);
+      last = m.index + url.length;
+      linked = true;
+    }
+    if (!linked) return;
+    frag.appendChild(document.createTextNode(text.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
 async function fixDocImages(div) {
   const jobs = [];
   div.querySelectorAll('img').forEach(img => {
@@ -288,6 +332,7 @@ async function renderDoc(block, section, index) {
   div.innerHTML = contents.innerHTML;
   div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
   fixDocImages(div);
+  linkifyUrls(div);
   section.appendChild(div);
 }
 
@@ -465,24 +510,72 @@ async function renderSheetScreenings(block, section) {
     [['日付', '上映日'], ['劇場', '会場', '上映館']]).filter(r => r[0]);
   if (!rows.length) throw new Error('データなし');
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
-    .filter(x => !x.d || x.d >= today) // 終わった上映は自動で消す（日付が読めない行は告知として残す）
+  const all = rows.map(r => ({ r, d: parseDateCell(r[0]) }));
+  const items = all.filter(x => !x.d || x.d >= today) // 日付が読めない行は告知として残す
     .sort((a, b) => (a.d ? a.d.getTime() : Infinity) - (b.d ? b.d.getTime() : Infinity)); // 日付なし行は末尾
-  if (!items.length) {
-    section.insertAdjacentHTML('beforeend',
-      '<div class="scr-none">上映は終了しました。新しい上映情報は決まり次第お知らせします。</div>');
-    return;
-  }
+  const past = all.filter(x => x.d && x.d < today)
+    .sort((a, b) => b.d.getTime() - a.d.getTime()); // 過去分は新しい順
   const W = ['日', '月', '火', '水', '木', '金', '土'];
-  section.insertAdjacentHTML('beforeend', items.map(({ r, d }) => {
+  const rowHtml = ({ r, d }) => {
     const isToday = d && d.getTime() === today.getTime();
     const dateText = d ? (d.getMonth() + 1) + '月' + d.getDate() + '日（' + W[d.getDay()] + '）' : r[0];
     return '<div class="scr-row' + (isToday ? ' today' : '') + '">' +
       '<span class="scr-date">' + escapeHtml(dateText) + (isToday ? '<span class="h-badge">本日</span>' : '') + '</span>' +
       '<span class="scr-venue">' + escapeHtml(r[1] || '') + '</span>' +
       '<span class="scr-time">' + escapeHtml(r[2] || '') + '</span>' +
-      (r[3] ? '<span class="scr-note">' + escapeHtml(r[3]) + '</span>' : '') + '</div>';
-  }).join(''));
+      (r[3] ? '<span class="scr-note">' + escapeHtml(r[3]) + '</span>' : '') +
+      (r[4] && /^https?:\/\//.test(r[4].trim()) ? '<a class="evt-link-btn" href="' + escapeHtml(r[4].trim()) + '" target="_blank" rel="noopener">詳しく見る</a>' : '') + '</div>';
+  };
+  const monthLabel = d => d ? d.getFullYear() + '年' + (d.getMonth() + 1) + '月' : '日付未定';
+  const groupedHtml = list => {
+    let html = '', last = null;
+    list.forEach(x => {
+      const label = monthLabel(x.d);
+      if (label !== last) { html += '<div class="evt-month">' + label + '</div>'; last = label; }
+      html += rowHtml(x);
+    });
+    return html;
+  };
+  let html = '';
+  if (items.length) {
+    const INITIAL = 10; // 最初に表示する件数（残りは「もっと見る」で開く）
+    const head = items.slice(0, INITIAL), tail = items.slice(INITIAL);
+    html += groupedHtml(head);
+    if (tail.length) {
+      html += '<div class="evt-tail" hidden>' + groupedHtml(tail) + '</div>' +
+        '<button type="button" class="evt-more-btn">もっと見る（残り' + tail.length + '件）</button>';
+    }
+  } else if (past.length) {
+    html += '<div class="scr-none">現在予定されている上映はありません。</div>';
+  } else {
+    html += '<div class="scr-none">上映は終了しました。新しい上映情報は決まり次第お知らせします。</div>';
+  }
+  if (past.length) {
+    const PAST_INITIAL = 20; // 過去分は最初に20件、残りは「もっと見る」で遡る
+    const pHead = past.slice(0, PAST_INITIAL), pTail = past.slice(PAST_INITIAL);
+    html += '<button type="button" class="evt-more-btn evt-archive-btn">過去の上映を見る（全' + past.length + '件）</button>' +
+      '<div class="evt-archive" hidden>' + groupedHtml(pHead);
+    if (pTail.length) {
+      html += '<div class="evt-tail" hidden>' + groupedHtml(pTail) + '</div>' +
+        '<button type="button" class="evt-more-btn">もっと見る（残り' + pTail.length + '件）</button>';
+    }
+    html += '</div>';
+  }
+  section.insertAdjacentHTML('beforeend', html);
+  section.querySelectorAll('.evt-more-btn').forEach(btn => {
+    if (btn.classList.contains('evt-archive-btn')) {
+      btn.addEventListener('click', () => {
+        const box = btn.nextElementSibling;
+        box.hidden = !box.hidden;
+        btn.textContent = box.hidden ? '過去の上映を見る（全' + past.length + '件）' : '過去の上映を閉じる';
+      });
+    } else {
+      btn.addEventListener('click', () => {
+        btn.previousElementSibling.hidden = false;
+        btn.remove();
+      });
+    }
+  });
 }
 
 async function renderSheetCredits(block, section) {
@@ -512,13 +605,36 @@ async function renderSheetNews(block, section) {
   if (!rows.length) throw new Error('データなし');
   const items = rows.map(r => ({ r, d: parseDateCell(r[0]) }))
     .sort((a, b) => (b.d || 0) - (a.d || 0)); // 新しい順
-  section.insertAdjacentHTML('beforeend', items.map(({ r, d }) => {
+  const rowHtml = ({ r, d }) => {
     const dateText = d ? d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0') : (r[0] || '');
     const head = escapeHtml(r[1]);
     return '<div class="news-item"><span class="news-date">' + escapeHtml(dateText) + '</span><span>' +
       (r[2] ? '<a href="' + escapeHtml(r[2]) + '" target="_blank" rel="noopener">' + head + '</a>' : head) +
       '</span></div>';
-  }).join(''));
+  };
+  const monthLabel = d => d ? d.getFullYear() + '年' + (d.getMonth() + 1) + '月' : '日付なし';
+  const groupedHtml = list => {
+    let html = '', last = null;
+    list.forEach(x => {
+      const label = monthLabel(x.d);
+      if (label !== last) { html += '<div class="evt-month">' + label + '</div>'; last = label; }
+      html += rowHtml(x);
+    });
+    return html;
+  };
+  const INITIAL = 10; // 最初に表示する件数（残りは「もっと見る」で開く）
+  const head = items.slice(0, INITIAL), tail = items.slice(INITIAL);
+  let html = groupedHtml(head);
+  if (tail.length) {
+    html += '<div class="evt-tail" hidden>' + groupedHtml(tail) + '</div>' +
+      '<button type="button" class="evt-more-btn">もっと見る（残り' + tail.length + '件）</button>';
+  }
+  section.insertAdjacentHTML('beforeend', html);
+  const btn = section.querySelector('.evt-more-btn');
+  if (btn) btn.addEventListener('click', () => {
+    section.querySelector('.evt-tail').hidden = false;
+    btn.remove();
+  });
 }
 
 // 緊急バナー：ドキュメントに書けば表示され、空にすれば消える（操作はお知らせと全く同じ）
@@ -543,12 +659,13 @@ async function renderAlert(block, section, index) {
   div.innerHTML = contents.innerHTML;
   div.querySelectorAll('a').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
   fixDocImages(div);
+  linkifyUrls(div);
   section.appendChild(div);
 }
 
 async function renderSheetEvents(block, section) {
   const rows = dropHeader(await fetchSheetRows(block),
-    [['日付', '開催日'], ['イベント名', 'タイトル', 'ライブ名']]).filter(r => r[0] || r[1]);
+    [['日付', '開催日', '日時'], ['イベント名', 'タイトル', 'ライブ名', 'イベント']]).filter(r => r[0] || r[1]);
   if (!rows.length) throw new Error('データなし');
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const all = rows.map(r => ({ r, d: parseDateCell(r[0]) }));
